@@ -14485,9 +14485,9 @@
 
   function any           (x)           { return ti.dot(x, tm.ol(x)) > 0; }
   function all           (x)           { return ti.dot(x, tm.ol(x)) / ti.len(x) >= 1; }
-  function log2          (x)           { return ti.log(x) / g.LN2; }
+  function log2          (x)           { return ti.log(x) / 0.69314718055; }
   function exp2          (x)           { return ti.pow(2, x);  }
-  function log10         (x)           { return ti.log(x) / g.LN10; }
+  function log10         (x)           { return ti.log(x) / 2.30258509299; }
   function normalize     (v)           { return ti.normalized(v); }
   function next_pot      (x)           { return ti.pow(2, ti.ceil(tm.log2(x))); }
   function mod           (n, m)        { return n - m * ti.floor(n / m); }
@@ -14543,24 +14543,24 @@
   function faceforward(N, I, Nref) {
       if (Nref == null) Nref = N;
 
-      var dot = 0;
+      var d = 0;
       for (var i = 0; i < N.length; i++) {
-          dot += Nref[i] * I[i];
+          d += Nref[i] * I[i];
       }
 
-      return dot > 0 ? N.map(function (x) { return -x; }) : N;
+      return d > 0 ? N.map(function (x) { return -x; }) : N;
   }
   faceforward.type = genType;
 
   function reflect(I, N) {
-      var dot = 0;
+      var d = 0;
       for (var i = 0; i < N.length; i++) {
-          dot += N[i] * I[i];
+          d += N[i] * I[i];
       }
 
       var out = Array(N.length);
       for (var i = 0; i < N.length; i++) {
-          out[i] = I[i] - 2 * dot * N[i];
+          out[i] = I[i] - 2 * d * N[i];
       }
 
       return out;
@@ -14568,18 +14568,18 @@
   reflect.type = genType;
 
   function refract(I, N, eta) {
-      var dot = 0;
+      var d = 0;
       for (var i = 0; i < N.length; i++) {
-          dot += N[i] * I[i];
+          d += N[i] * I[i];
       }
 
-      var k = 1 - eta * eta * (1 - dot * dot);
+      var k = 1 - eta * eta * (1 - d * d);
 
       var out = Array(N.length).fill(0);
 
       if (k > 0) {
           for (var i = 0; i < N.length; i++) {
-              out[i] = eta * I[i] - (eta * dot + Math.sqrt(k)) * N[i];
+              out[i] = eta * I[i] - (eta * d + Math.sqrt(k)) * N[i];
           }
       }
 
@@ -20573,7 +20573,7 @@
   		includes: true,
 
   		// Enable debugging facilities: `print(anything)` will log to console a string of transpiled code with it’s type separated by colon, `show(anything)` will print the rendered descriptor of passed fragment of code. Note also that you can safely use `console.log(value)` to debug shader runtime.
-  		debug: true
+  		debug: false
   	});
 
   	let result = compile(glsl);
