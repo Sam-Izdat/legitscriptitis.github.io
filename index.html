@@ -56,26 +56,27 @@ void ColorPass(in float r, in float g, in float b, out vec4 out_color)
   // - almost everything else!
   vec2 complex_sqr(vec2 z) { return vec2(z[0] * z[0] - z[1] * z[1], z[1] * z[0] * 2); }  
   ivec2 s = _lti_resolution;
-  int n = int(s.x * 0.5);
+  float t = _lti_time * 0.0012;
   void main() {
     float i = gl_FragCoord.x;
     float j = gl_FragCoord.y;
     float w = gl_FragCoord.xy/s;
-    float t = _lti_time * 0.0012;
-    float l = t;
-    float q = t;
+    float n = s.x * 0.5;
     vec2 c = vec2(-0.8, cos(t));
-    vec2 z = vec2(i / n - 1, j / n - 0.5) * 2;
-    vec3 d = vec3(0.);
-    int iterations = 0;
+    vec2 z = vec2(i / n - 1, j / n - 1.) * 2;
+    int it = 0;
     // from: https://stackblitz.com/edit/taichi-js-fractal?file=index.js
-    while (sqrt(dot(z, z)) < 20 && iterations < 50) {
+    while (sqrt(dot(z, z)) < 20. && it < 50) {
       z = complex_sqr(z) + c;
-      iterations = iterations + 1;
+      it = it + 1;
     }    
-    vec4 fractal = vec4(float(iterations) - log(0.5 * log(dot(z, z)) / log(20.0)) / log(2.0)) * 0.02;
+    float eps = 1e-7;
+    vec4 fractal = vec4(float(it) - log2(max(0.5 * log(dot(z, z)) / log(20.0), eps))) * 0.02;
     fractal.a = 1.;
     // from: https://www.shadertoy.com/view/XsXXDn
+    float l = 0.;
+    vec3 d = vec3(0.);
+    float q = t;
     int k = 0;
     while(k<3) {
         vec2 p = w;
